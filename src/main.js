@@ -1,12 +1,15 @@
-import Vue from "vue";
-import App from "./App.vue";
-import router from "./router";
-import store from "./store";
+import Application from "@base/Application"
+import Context from "@base/Context"
+import App from "./App"
+import config from "@config"
+import utils from "@utils"
+import modules from "@modules"
 
-Vue.config.productionTip = false;
+// Создать контекст приложения
+const context = new Context(config, utils)
 
-new Vue({
-  router,
-  store,
-  render: (h) => h(App),
-}).$mount("#app");
+// Инициализировать приложение
+const app = new Application(App, modules, context, config.main)
+
+// Монтировать приложение
+app.mount("#app")

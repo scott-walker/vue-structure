@@ -9,4 +9,8 @@ export default class AccessManager {
   constructor(config) {
     this.config = config
   }
+
+  isLogged() {
+    return Math.random() > 0.5
+  }
 }

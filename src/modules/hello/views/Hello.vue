@@ -16,10 +16,25 @@ export default {
       text: ""
     }
   },
+  // context: ({ invoke }) => {
+  //   return {
+  //     textService: invoke("textService")
+  //   }
+  // },
+  // context: ["textService"],
+  computed: {
+    textService() {
+      return this.$context.invoke("textService")
+    }
+  },
   methods: {
-    async onGetText() {
-      this.text = "Some text"
-      // this.text = await this.$textService.getText()
+    onGetText() {
+      this.text = "Please wait..."
+      this.$nextTick(async () => {
+        // this.text = await this.$textService.getText()
+        this.text = await this.textService.getText()
+      })
+
       // this.$alert.error("Some error")
       // this.$modal.show("hello")
     }

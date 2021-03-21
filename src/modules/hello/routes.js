@@ -1,11 +1,11 @@
-export default context => {
-  const accessManager = context.get("accessManager")
+export default ({ invoke }) => {
+  const accessManager = invoke("accessManager")
 
   return [
     {
-      path: "/",
-      name: "Home",
-      component: null,
+      path: "/hello",
+      name: "Hello",
+      component: () => import("./views/Hello"),
       meta: {
         access: () => accessManager.isLogged()
       }

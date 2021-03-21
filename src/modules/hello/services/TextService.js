@@ -1,5 +1,5 @@
 export default class TextService {
-  constructor({ httpClient, errorParser }) {
+  constructor(httpClient, errorParser) {
     this.httpClient = httpClient
     this.errorParser = errorParser
   }
@@ -10,11 +10,5 @@ export default class TextService {
         resolve("Some text")
       }, 1000)
     })
-
-    // try {
-    //   await this.httpClient.post("user/login", { email, password })
-    // } catch (error) {
-    //   throw this.errorParser.parse(error)
-    // }
   }
 }

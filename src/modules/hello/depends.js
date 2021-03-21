@@ -4,11 +4,11 @@ import TextService from "./services/TextService"
 /**
  * Зависимости модуля
  */
-export default ({ config, make, invoke }) => {
-  return [
-    {
-      textModel: params => new TextModel(params),
-      textService: () => new TextService(make("textModel", { id: null }), invoke("errorParser"), config.baseUrl)
-    }
-  ]
+export default ({ make, invoke }) => {
+  const model = { id: 1, content: "test" }
+
+  return {
+    textModel: data => new TextModel(data),
+    textService: () => new TextService(make("textModel", model), invoke("errorParser"))
+  }
 }

@@ -3,4 +3,4 @@ import routes from "./routes"
 import store from "./store"
 import dependencies from "./depends"
 
-return new Module("hello", { routes, store, dependencies })
+export default new Module("hello", { routes, store, dependencies })

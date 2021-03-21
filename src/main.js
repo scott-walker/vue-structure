@@ -6,7 +6,7 @@ import utils from "@utils"
 import modules from "@modules"
 
 // Создать контекст приложения
-const context = new Context(config, utils)
+const context = new Context(config, { dependencies: utils })
 
 // Инициализировать приложение
 const app = new Application(App, modules, context, config.main)

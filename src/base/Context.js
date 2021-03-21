@@ -5,27 +5,19 @@ export default class Context {
   /**
    * Инициализировать контекст
    * @param {Object} config конфигурация контекста
-   * @param {Object} dependencies карта зависимостей контекста
+   * @param {Object} assets ресурсы контекста
    */
-  constructor(config, dependencies) {
+  constructor(config, assets) {
     this.config = config || {}
+    this.routes = []
+    this.store = {
+      modules: {}
+    }
     this.dependencies = {}
     this.instances = {}
 
-    if (dependencies) {
-      this.setDependencies(dependencies)
-    }
-  }
-
-  /**
-   * Установить зависимости
-   * @param {Object} dependencies карта зависимостей
-   * @param {Boolean} force позволяется перезапись зависимости
-   */
-  setDependencies(dependencies, force = false) {
-    for (const [address, dependency] of Object.entries(dependencies)) {
-      this.set(address, dependency, force)
-    }
+    // Расширить ресурсы контекста
+    this.extend(assets || {})
   }
 
   /**
@@ -35,8 +27,9 @@ export default class Context {
    * @param {Boolean} force позволяется перезапись зависимости
    */
   set(address, dependency, force = false) {
+    // Если отключена форсированная перезапись и зависимость с заданным адресом уже существует
     if (!force && this.dependencies[address]) {
-      throw ""
+      throw `Зависимость с адресом "${address}" уже существует`
     }
 
     this.dependencies[address] = dependency
@@ -55,6 +48,18 @@ export default class Context {
   }
 
   /**
+   * Получить ресурсы контекста
+   * @return {Object}
+   */
+  getAssets() {
+    return {
+      routes: this.routes,
+      store: this.store,
+      dependencies: this.dependencies
+    }
+  }
+
+  /**
    * Сделать новый экземпляр зависимости
    * @param {String} address адрес зависимости
    * @param {*} params параметры зависимости
@@ -64,7 +69,7 @@ export default class Context {
     const dependency = this.dependencies[address]
 
     if (!dependency) {
-      throw ""
+      throw `Зависимость по адресу "${address}" не существует`
     }
 
     if (dependency instanceof Function) {
@@ -85,5 +90,81 @@ export default class Context {
     }
 
     return this.instances[address]
+  }
+
+  /**
+   * Расширить контекст
+   * @param {Object} assets
+   */
+  extend({ routes, store, dependencies }) {
+    // Если переданы маршруты
+    if (routes) {
+      // Расширить коллекцию маршрутов
+      this.extendRoutes(routes)
+    }
+
+    // Если передано хранилище состояний
+    if (store) {
+      //  Расширить хранилище состояний
+      this.extendStore(store)
+    }
+
+    // Если переданы зависимости
+    if (dependencies) {
+      // Расширить зависимости контекста
+      this.extendDependencies(dependencies)
+    }
+  }
+
+  /**
+   * Расширить коллекцию маршрутов контекста
+   * @param {Array|Function} routes маршруты
+   */
+  extendRoutes(routes) {
+    routes = routes instanceof Function ? routes.call(null, this.getArea()) : routes
+
+    // Если маршруты получены
+    if (routes) {
+      this.routes = [...this.routes, ...routes]
+    }
+  }
+
+  /**
+   * Расширить хранилище состояний контекста
+   * @param {Object|Function} store хранилище состояний
+   */
+  extendStore(store) {
+    store = store instanceof Function ? store.call(null, this.getArea()) : store
+
+    // Если хранилище получено
+    if (store) {
+      // Модули хранилища состояний
+      const modules = {}
+
+      // Обойти карту модулей хранилища
+      for (const [name, storeModule] of Object.entries(store)) {
+        modules[name] = storeModule
+        modules[name].namespaced = true
+      }
+
+      this.store.modules = { ...this.store.modules, ...modules }
+    }
+  }
+
+  /**
+   * Расширить зависимости контекста
+   * @param {Object} dependencies зависимости
+   * @param {Boolean} force позволяется перезапись зависимости
+   */
+  extendDependencies(dependencies, force = false) {
+    dependencies = dependencies instanceof Function ? dependencies.call(null, this.getArea()) : dependencies
+
+    // Если зависимости получены
+    if (dependencies) {
+      // Обойти карту зависимостей
+      for (const [address, dependency] of Object.entries(dependencies)) {
+        this.set(address, dependency, force)
+      }
+    }
   }
 }

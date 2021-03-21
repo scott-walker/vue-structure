@@ -26,8 +26,6 @@ export default class Application {
     this.modules = modules
     this.context = context || new Context()
     this.config = config || {}
-    this.routes = []
-    this.store = {}
 
     // Регистрировать модули приложения
     this.registerModules()
@@ -46,25 +44,10 @@ export default class Application {
     // Обойти все модули приложения
     this.modules.forEach(appModule => {
       // Получить ресурсы модуля
-      const { routes, stores, dependencies } = appModule.getAssets()
+      const assets = appModule.getAssets()
 
-      // Если модуль имеет маршруты
-      if (routes) {
-        // Расширить коллекцию маршрутов приложения
-        this.extendRoutes(routes)
-      }
-
-      // Если модуль имеет хранилище состояний
-      if (stores) {
-        //  Расширить хранилище состояний приложения
-        this.extendStore(stores)
-      }
-
-      // Если модуль имеет зависимости
-      if (dependencies) {
-        // Расширить зависимости контекста приложения
-        this.extendDependencies(dependencies)
-      }
+      // Расширить контекст ресурсами модуля
+      this.context.extend(assets)
     })
   }
 
@@ -74,10 +57,13 @@ export default class Application {
   initRouter() {
     Vue.use(Router)
 
+    // Получить маршруты из контекста
+    const { routes } = this.context.getAssets()
+
     this.router = new Router({
       mode: "history",
       base: this.config.baseUrl,
-      routes: this.routes
+      routes
     })
   }
 
@@ -87,7 +73,10 @@ export default class Application {
   initStore() {
     Vue.use(Vuex)
 
-    this.store = new Vuex.Store(this.store)
+    // Получить хранилище состояний из контекста
+    const { store } = this.context.getAssets()
+
+    this.store = new Vuex.Store(store)
   }
 
   /**
@@ -109,42 +98,5 @@ export default class Application {
    */
   mount(selector) {
     this.vue.$mount(selector)
-  }
-
-  /**
-   * Расширить коллекцию маршрутов приложения
-   * @param {Array|Function} routes маршруты
-   */
-  extendRoutes(routes) {
-    routes = routes instanceof Function ? routes.call(null, this.context.getArea()) : routes
-
-    this.routes = [...this.routes, ...routes]
-  }
-
-  /**
-   * Расширить хранилище состояний приложения
-   * @param {Object|Function} store хранилище состояний
-   */
-  extendStore(store) {
-    const modules = {}
-    const storeMap = store instanceof Function ? store.call(null, this.context.getArea()) : store
-
-    // Обойти карту модулей хранилища
-    for (const [name, storeModule] of Object.entries(storeMap)) {
-      modules[name] = storeModule
-      modules[name].namespaced = true
-    }
-
-    this.store.modules = { ...this.store.modules, ...modules }
-  }
-
-  /**
-   * Расширить зависимости контекста приложения
-   * @param {Object} dependencies зависимости
-   */
-  extendDependencies(dependencies) {
-    dependencies = dependencies instanceof Function ? dependencies.call(null, this.context.getArea()) : dependencies
-
-    this.context.setDependencies(dependencies)
   }
 }

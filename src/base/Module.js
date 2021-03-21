@@ -20,6 +20,7 @@ export default class Module {
 
   /**
    * Получить ресурсы модуля
+   * @return {Object}
    */
   getAssets() {
     return {

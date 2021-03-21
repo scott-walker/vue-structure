@@ -2,6 +2,7 @@ import Vue from "vue"
 import Vuex from "vuex"
 import Router from "vue-router"
 import Context from "@base/Context"
+import corePlugins from "@base/plugins"
 
 /**
  * Приложение
@@ -27,14 +28,26 @@ export default class Application {
     this.context = context || new Context()
     this.config = config || {}
 
+    // Регистрировать ресурсы ядра
+    this.registerCoreAssets()
     // Регистрировать модули приложения
     this.registerModules()
+    // Регистрировать плагины приложения
+    this.registerPlugins()
     // Инициализировать маршрутизатор
     this.initRouter()
     // Инициализировать хранилище состояний
     this.initStore()
     // Инициализировать Vue приложение
     this.initApp()
+  }
+
+  /**
+   * Регистрировать ресурсы ядра
+   */
+  registerCoreAssets() {
+    // Расширить контекст плагинами ядра
+    this.context.extendPlugins(corePlugins)
   }
 
   /**
@@ -48,6 +61,22 @@ export default class Application {
 
       // Расширить контекст ресурсами модуля
       this.context.extend(assets)
+    })
+  }
+
+  /**
+   * Регистрировать плагины приложения
+   */
+  registerPlugins() {
+    // Получить плагины из контекста
+    const { plugins } = this.context.getAssets()
+
+    // Обойти все плагины контекста
+    plugins.forEach(({ plugin, options }) => {
+      plugin = plugin instanceof Function ? plugin.call(null, Vue) : plugin
+      options = options || {}
+
+      Vue.use(plugin, options)
     })
   }
 

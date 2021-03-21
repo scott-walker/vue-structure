@@ -7,7 +7,7 @@ export default class Module {
    * @param {String} id
    * @param {Object} assets
    */
-  constructor(id, { routes, store, dependencies }) {
+  constructor(id, { routes, store, dependencies, plugins }) {
     if (!id) {
       throw "Необходимо передать ID модуля приложения"
     }
@@ -16,6 +16,7 @@ export default class Module {
     this.routes = routes || null
     this.store = store || null
     this.dependencies = dependencies || null
+    this.plugins = plugins || null
   }
 
   /**
@@ -26,7 +27,8 @@ export default class Module {
     return {
       routes: this.routes,
       store: this.store,
-      dependencies: this.dependencies
+      dependencies: this.dependencies,
+      plugins: this.plugins
     }
   }
 }

@@ -3,7 +3,7 @@ import HttpClient from "./HttpClient"
 import ErrorParser from "./ErrorParser"
 
 /**
- * Зависимости контекста
+ * Зависимости приложения
  */
 export default ({ config }) => {
   return {

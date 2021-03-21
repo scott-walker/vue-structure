@@ -10,10 +10,9 @@ export default class Context {
   constructor(config, assets) {
     this.config = config || {}
     this.routes = []
-    this.store = {
-      modules: {}
-    }
+    this.store = { modules: {} }
     this.dependencies = {}
+    this.plugins = []
     this.instances = {}
 
     // Расширить ресурсы контекста
@@ -55,7 +54,8 @@ export default class Context {
     return {
       routes: this.routes,
       store: this.store,
-      dependencies: this.dependencies
+      dependencies: this.dependencies,
+      plugins: this.plugins
     }
   }
 
@@ -96,7 +96,7 @@ export default class Context {
    * Расширить контекст
    * @param {Object} assets
    */
-  extend({ routes, store, dependencies }) {
+  extend({ routes, store, dependencies, plugins }) {
     // Если переданы маршруты
     if (routes) {
       // Расширить коллекцию маршрутов
@@ -114,6 +114,12 @@ export default class Context {
       // Расширить зависимости контекста
       this.extendDependencies(dependencies)
     }
+
+    // Если переданы плагины
+    if (plugins) {
+      // Расширить коллекцию плагинов контекста
+      this.extendPlugins(plugins)
+    }
   }
 
   /**
@@ -124,7 +130,7 @@ export default class Context {
     routes = routes instanceof Function ? routes.call(null, this.getArea()) : routes
 
     // Если маршруты получены
-    if (routes) {
+    if (routes instanceof Array) {
       this.routes = [...this.routes, ...routes]
     }
   }
@@ -165,6 +171,19 @@ export default class Context {
       for (const [address, dependency] of Object.entries(dependencies)) {
         this.set(address, dependency, force)
       }
+    }
+  }
+
+  /**
+   * Расширить коллекцию плагинов контекста
+   * @param {Array|Function} plugins плагины
+   */
+  extendPlugins(plugins) {
+    plugins = plugins instanceof Function ? plugins.call(null, this.getArea()) : plugins
+
+    // Если плагины получены
+    if (plugins instanceof Array) {
+      this.plugins = [...this.plugins, ...plugins]
     }
   }
 }

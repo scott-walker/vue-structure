@@ -1,5 +1,5 @@
 export default ({ invoke }) => {
-  const accessManager = invoke("accessManager")
+  const accessManager = invoke("@utils/AccessManager")
 
   return [
     {

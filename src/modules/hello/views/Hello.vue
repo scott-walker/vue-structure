@@ -21,18 +21,22 @@ export default {
   //     textService: invoke("textService")
   //   }
   // },
-  // context: ["textService"],
-  computed: {
-    textService() {
-      return this.$context.invoke("textService")
-    }
-  },
+  context: [{ name: "TextService", from: "@hello/services/TextService", method: "make" }],
+  // context: {
+  //   // textService: "@hello/services/TextService",
+  //   textService: { name: "TextService", from: "@hello/services/TextService", method: "make" }
+  // },
+  // computed: {
+  //   textService() {
+  //     return this.$context.invoke("textService")
+  //   }
+  // },
   methods: {
     onGetText() {
       this.text = "Please wait..."
       this.$nextTick(async () => {
         // this.text = await this.$textService.getText()
-        this.text = await this.textService.getText()
+        this.text = await this.$TextService.getText()
       })
 
       // this.$alert.error("Some error")

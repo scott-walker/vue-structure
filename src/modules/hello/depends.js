@@ -9,7 +9,7 @@ export default ({ make }) => {
   const textServiceConfig = { timeout: 3000 }
 
   return {
-    textModel: data => new TextModel(data),
-    textService: () => new TextService(make("textModel", model), textServiceConfig)
+    "@hello/models/TextModel": data => new TextModel(data),
+    "@hello/services/TextService": () => new TextService(make("@hello/models/TextModel", model), textServiceConfig)
   }
 }

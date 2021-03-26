@@ -1,7 +1,7 @@
-// Общий модуль
-import common from "./common"
+// Базовый модуль
+import base from "./base"
 // Модуль для ознакомления
 import hello from "./hello"
 
 // Коллекция подключенных модулей приложения
-export default [common, hello]
+export default [base, hello]

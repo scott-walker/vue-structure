@@ -10,15 +10,14 @@ export default class HttpClient {
     this.config = config
   }
 
-  async get() {
-    return {}
-  }
+  /**
+   * Отправить POST запрос
+   * @param {String} url
+   * @param {Object} data
+   */
+  async post(url, data = {}) {
+    const hash = `${JSON.stringify(data).length}-${Math.random()}-${Date.now()}`
 
-  async post() {
-    return {}
-  }
-
-  async request() {
-    return {}
+    return new Promise(resolve => setTimeout(() => resolve(`${url}-${hash}`), 1000))
   }
 }

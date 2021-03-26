@@ -10,6 +10,10 @@ export default class ErrorParser {
     this.config = config || {}
   }
 
+  /**
+   * Парсить ошибку
+   * @param {Object} error
+   */
   parse(error) {
     return (error && error.message) || "Ошибка"
   }

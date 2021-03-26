@@ -1,14 +1,16 @@
 import AccessManager from "./AccessManager"
 import HttpClient from "./HttpClient"
 import ErrorParser from "./ErrorParser"
+import Storage from "./Storage"
 
 /**
  * Зависимости приложения
  */
 export default ({ config }) => {
   return {
-    accessManager: () => new AccessManager(config.accessManager),
-    httpClient: () => new HttpClient(config.httpClient),
-    errorParser: () => new ErrorParser()
+    "@utils/AccessManager": () => new AccessManager(config.accessManager),
+    "@utils/HttpClient": () => new HttpClient(config.httpClient),
+    "@utils/ErrorParser": () => new ErrorParser(),
+    "@utils/Storage": () => new Storage()
   }
 }

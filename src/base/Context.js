@@ -97,18 +97,6 @@ export default class Context {
    * @param {Object} assets
    */
   extend({ routes, store, dependencies, plugins }) {
-    // Если переданы маршруты
-    if (routes) {
-      // Расширить коллекцию маршрутов
-      this.extendRoutes(routes)
-    }
-
-    // Если передано хранилище состояний
-    if (store) {
-      //  Расширить хранилище состояний
-      this.extendStore(store)
-    }
-
     // Если переданы зависимости
     if (dependencies) {
       // Расширить зависимости контекста
@@ -119,6 +107,18 @@ export default class Context {
     if (plugins) {
       // Расширить коллекцию плагинов контекста
       this.extendPlugins(plugins)
+    }
+
+    // Если передано хранилище состояний
+    if (store) {
+      //  Расширить хранилище состояний
+      this.extendStore(store)
+    }
+
+    // Если переданы маршруты
+    if (routes) {
+      // Расширить коллекцию маршрутов
+      this.extendRoutes(routes)
     }
   }
 

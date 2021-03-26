@@ -22,12 +22,10 @@ export default class ContextPlugin {
     Vue.mixin({
       beforeCreate() {
         plugin.createContext(this)
-        // console.log("beforeCreate", plugin.contextComponentsMap)
       },
 
       beforeDestroy() {
         plugin.removeContext(this)
-        // console.log("beforeDestroy", plugin.contextComponentsMap)
       }
     })
 
@@ -53,22 +51,70 @@ export default class ContextPlugin {
 
       // Если карта контекста определена как массив
       if (map instanceof Array) {
-        context = map.reduce((dependencies, address) => {
-          dependencies[address] = this.context.invoke(address)
+        context = map.reduce((dependencies, data) => {
+          let name = null
+          let address = null
+          let method = "invoke"
+
+          // Если запись является строкой
+          if (typeof data === "string") {
+            address = data
+            name = data
+          }
+          // Если запись является объектом со свойством from
+          else if (data instanceof Object && "from" in data) {
+            address = data.from
+            name = data.name || data.from
+            method = data.method || method
+          } else {
+            throw `Проблемы с описанием зависимости в компоненте ${component.name}`
+          }
+
+          if (address && name) {
+            dependencies[name] = this.context[method].call(null, address)
+          }
 
           return dependencies
         }, {})
       }
+
       // Если карта контекста определена как функция обратного вызова
       else if (map instanceof Function) {
         context = map.call(null, this.context)
       }
 
+      // Если карта контекста определена как объект-карта
+      else if (map instanceof Object) {
+        context = Object.entries(map).reduce((dependencies, [name, data]) => {
+          let address = null
+          let method = "invoke"
+
+          // Если запись является строкой
+          if (typeof data === "string") {
+            address = data
+          }
+          // Если запись является объектом со свойством from
+          else if (data instanceof Object && "from" in data) {
+            address = data.from
+            name = data.prop || name
+            method = data.method || method
+          } else {
+            throw `Проблемы с описанием зависимости "${name}" в компоненте ${component.name}`
+          }
+
+          if (address) {
+            dependencies[name] = this.context[method].call(null, address)
+          }
+
+          return dependencies
+        }, {})
+      }
+
       // Если контекст сформирован
       if (context) {
         // Определить свойства-зависисмости компонента
-        for (const [address, dependency] of Object.entries(context)) {
-          component[this.generateDependencyPropName(address)] = dependency
+        for (const [name, dependency] of Object.entries(context)) {
+          component[this.generateDependencyPropName(name)] = dependency
         }
 
         // Запомнить контекст компонента

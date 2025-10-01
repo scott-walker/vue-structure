@@ -14,10 +14,6 @@
 
 ### Модульность
 
-![Modular](https://img.shields.io/badge/Architecture-Modular-blue?style=for-the-badge)
-![Isolation](https://img.shields.io/badge/Isolation-Strict-red?style=for-the-badge)
-![Scalability](https://img.shields.io/badge/Scalability-High-green?style=for-the-badge)
-
 - **Строгая изоляция** - каждый модуль самодостаточен
 - **Нет глобальных views/stores** - все в модулях
 - **Единая структура** - все модули следуют одинаковой структуре
@@ -25,13 +21,14 @@
 
 ### Типизация
 
-![TypeScript](https://img.shields.io/badge/TypeScript-100%25-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![Type Safety](https://img.shields.io/badge/Type%20Safety-Full-green?style=for-the-badge)
-![IntelliSense](https://img.shields.io/badge/IntelliSense-Enabled-blue?style=for-the-badge)
-
 - Полная типизация TypeScript
 - Семантичные типы для всех компонентов
 - Type safety на всех уровнях
+
+![TypeScript](https://img.shields.io/badge/TypeScript-100%25-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Type Safety](https://img.shields.io/badge/Type%20Safety-Full-green?style=for-the-badge)
+![Modular](https://img.shields.io/badge/Architecture-Modular-blue?style=for-the-badge)
+![Isolation](https://img.shields.io/badge/Isolation-Strict-red?style=for-the-badge)
 
 ## 📁 Структура проекта
 
@@ -224,14 +221,6 @@ export default [base, app, hello, counter, myModule]
 - **Модульная система** - изолированные модули приложения
 - **Context API** - система внедрения зависимостей
 - **Декомпозированные компоненты** - переиспользуемые UI элементы
-
-## Статус проекта
-
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge)
-![Tests](https://img.shields.io/badge/tests-passing-brightgreen?style=for-the-badge)
-![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen?style=for-the-badge)
-![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue?style=for-the-badge)
-![Vue](https://img.shields.io/badge/Vue-3.5.22-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)
 
 ## Лицензия
 

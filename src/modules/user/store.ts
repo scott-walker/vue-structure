@@ -1,10 +1,11 @@
 import { ref } from "vue"
+import type { ModuleInitStored } from "@types"
 import type { UserStore } from "./types"
 
 /**
  * Хранилище состояния модуля "user"
  */
-export const initStored = (): UserStore => {
+export const initStored: ModuleInitStored<UserStore> = () => {
   const name = ref("")
   const isLogged = ref(false)
   const loading = ref(false)

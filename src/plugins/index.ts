@@ -1,10 +1,6 @@
-import type { Plugin } from "@types"
+// import type { Plugin } from "../types/old"
 
-/**
- * Плагины приложения
- */
-const plugins = (): Plugin[] => {
-  return []
-}
-
-export default plugins
+// /**
+//  * Зарегистрировать плагины
+//  */
+// export const registerPlugins = (): Plugin[] => []

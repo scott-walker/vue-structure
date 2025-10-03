@@ -89,27 +89,27 @@ export class Context implements IContext {
    * Использовать модуль хранилища состояний
    * @param id ID модуля
    */
-  public useStored<T = StoredApi>(id: ModuleId): T {
-    const useStore = this.stored.get(id)
+  public useStored<SA = StoredApi>(id: ModuleId): SA {
+    const useStore = this.stored.get(id) as () => SA
 
     if (!useStore) {
       throw new ContextError(`Stored API for module ${id} not found`)
     }
 
-    return useStore() as T
+    return useStore()
   }
 
   /**
    * Использовать модуль общедоступного API
    * @param id ID модуля
    */
-  public useShared<T = SharedApi>(id: ModuleId): T {
+  public useShared<SA = SharedApi>(id: ModuleId): SA {
     const shared = this.shared.get(id)
 
     if (!shared) {
       throw new ContextError(`Shared API for module ${id} not found`)
     }
 
-    return shared as T
+    return shared as SA
   }
 }

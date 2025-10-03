@@ -25,7 +25,12 @@ export type Store = ReturnType<typeof createPinia>
 /**
  * Модуль хранилища состояний
  */
-export type StoredApi<T = unknown> = () => T
+export type StoredState = unknown
+
+/**
+ * Модуль хранилища состояний
+ */
+export type StoredApi<SS = StoredState> = SS
 
 /**
  * Карта модулей хранилища состояний
@@ -97,12 +102,12 @@ export type ModuleInitRoutes = (context: SharedContext) => RouterRoute[]
 /**
  * Инициализатор хранилища состояний модуля
  */
-export type ModuleInitStored<T = StoredApi> = (context: SharedContext) => T
+export type ModuleInitStored<SA = StoredApi> = (context: SharedContext) => SA
 
 /**
  * Инициализатор API модуля (общедоступный API)
  */
-export type ModuleInitShared<T = SharedApi> = (context: SharedContext) => T
+export type ModuleInitShared<SA = SharedApi> = (context: SharedContext) => SA
 
 /**
  * Интерфейс модуля
@@ -134,7 +139,7 @@ export type ModuleProps<ST = StoredApi, SH = SharedApi> = Pick<
 export type ApplicationProps = {
   root: VueComponent
   context: IContext
-  modules: IModule[]
+  modules: IModule<StoredApi, SharedApi>[]
 }
 
 /**

@@ -19,7 +19,8 @@ export default defineConfig({
       "@utils": path.resolve(src, "utils"),
       "@modules": path.resolve(src, "modules"),
       // "@plugins": path.resolve(src, "plugins"),
-      "@assets": path.resolve(src, "assets")
+      "@assets": path.resolve(src, "assets"),
+      "@shared": path.resolve(src, "shared")
     }
   }
 })

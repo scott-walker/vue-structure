@@ -90,28 +90,41 @@ export interface IContext {
 export type ModuleId = string
 
 /**
+ * Инициализатор маршрутов модуля
+ */
+export type ModuleInitRoutes = (context: SharedContext) => RouterRoute[]
+
+/**
+ * Инициализатор хранилища состояний модуля
+ */
+export type ModuleInitStored<T = StoredApi> = (context: SharedContext) => T
+
+/**
+ * Инициализатор API модуля (общедоступный API)
+ */
+export type ModuleInitShared<T = SharedApi> = (context: SharedContext) => T
+
+/**
  * Интерфейс модуля
  * @param id ID модуля
  * @param inirRoutes Инициализатор маршрутов модуля
  * @param initStored Инициализатор хранилища состояний модуля
  * @param initShared Инициализатор API модуля (общедоступный API)
  */
-export interface IModule {
+export interface IModule<ST = StoredApi, SH = SharedApi> {
   id: ModuleId
-  inirRoutes?: (context: SharedContext) => RouterRoute[]
-  initStored?: (context: SharedContext) => StoredApi
-  initShared?: (context: SharedContext) => SharedApi
+  inirRoutes?: ModuleInitRoutes
+  initStored?: ModuleInitStored<ST>
+  initShared?: ModuleInitShared<SH>
 }
 
 /**
  * Пропсы модуля
  */
-export type ModuleProps = {
-  id: IModule["id"]
-  inirRoutes?: IModule["inirRoutes"]
-  initStored?: IModule["initStored"]
-  initShared?: IModule["initShared"]
-}
+export type ModuleProps<ST = StoredApi, SH = SharedApi> = Pick<
+  IModule<ST, SH>,
+  "id" | "inirRoutes" | "initStored" | "initShared"
+>
 
 /**
  * Пропсы приложения

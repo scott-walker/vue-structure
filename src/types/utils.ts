@@ -2,7 +2,6 @@
  * Конфигурация утилит
  */
 export interface UtilsConfig {
-  accessManager: AccessManagerConfig
   httpClient: HttpClientConfig
   localStorage: LocalStorageConfig
 }
@@ -11,38 +10,8 @@ export interface UtilsConfig {
  * API утилит
  */
 export interface UtilsApi {
-  accessManager: IAccessManager
   httpClient: IHttpClient
   localStorage: ILocalStorage
-}
-
-/**
- * Конфигурация менеджера доступа
- * @param authKey ключ для хранения данных аутентификации в localStorage
- */
-export interface AccessManagerConfig {
-  authKey: string
-}
-
-/**
- * Состояние менеджера доступа
- * @param name имя пользователя
- * @param expiresAt дата истечения токена
- */
-export interface AccessManagerState {
-  token: string | null
-  expiresAt: number
-  name: string
-}
-
-/**
- * Интерфейс менеджера доступа
- * @param isExpired проверить, истекло ли время токена
- * @param isLogged проверить, авторизован ли пользователь
- */
-export interface IAccessManager {
-  isExpired(): boolean
-  isLogged(): boolean
 }
 
 /**

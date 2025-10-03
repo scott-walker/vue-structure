@@ -13,15 +13,13 @@ export default defineConfig({
   resolve: {
     extensions: [".js", ".ts", ".jsx", ".tsx", ".json", ".vue"],
     alias: {
-      "@": src,
-      "@base": path.resolve(src, "base"),
+      "@types": path.resolve(src, "types"),
+      "@core": path.resolve(src, "core"),
       "@config": path.resolve(src, "config"),
       "@utils": path.resolve(src, "utils"),
-      "@plugins": path.resolve(src, "plugins"),
       "@modules": path.resolve(src, "modules"),
-      "@assets": path.resolve(src, "assets"),
-      "@components": path.resolve(src, "components"),
-      "@types": path.resolve(src, "types")
+      // "@plugins": path.resolve(src, "plugins"),
+      "@assets": path.resolve(src, "assets")
     }
   }
 })

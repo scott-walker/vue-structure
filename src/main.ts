@@ -1,18 +1,20 @@
 import "./assets/main.css"
 
-import Application from "@base/Application"
-import Context from "@base/Context"
-import App from "./App.vue"
+import { Application, Context } from "@core"
 import { config } from "@config"
-import utils from "@utils"
-import plugins from "@plugins"
-import modules from "@modules"
+import { initUtils } from "@utils"
+// import { registerPlugins } from "@plugins"
+import { modules } from "@modules"
+import root from "./App.vue"
 
-// Создать контекст приложения
-const context = new Context(config, { dependencies: utils({ config: config.utils }), plugins })
+// Создать контекст
+const context = new Context()
 
-// Инициализировать приложение
-const app = new Application(App, modules, context, config.main)
+// Установить конфигурацию
+context.setConfig(config)
 
-// Монтировать приложение
-app.mount("#app")
+// Установить общедоступный API
+context.setShared("utils", initUtils(config.utils))
+
+// Создать приложение
+new Application({ root, context, modules }).mount("#app")

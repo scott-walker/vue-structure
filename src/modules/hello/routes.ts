@@ -1,5 +1,8 @@
 import { type RouteRecordRaw } from "vue-router"
 
+/**
+ * Получить маршруты в контексте
+ */
 export default ({ invoke }: { invoke: (address: string) => unknown }): RouteRecordRaw[] => {
   const accessManager = invoke("@utils/AccessManager") as { isLogged: () => boolean }
 

@@ -4,17 +4,14 @@ import type { SharedContext } from "@types"
 import type { UserStore } from "../types"
 import Button from "@shared/ui/Button.vue"
 
-const { useStored } = inject<SharedContext>("context")!
+const { useStored, useRouter } = inject<SharedContext>("context")!
+const userStore = useStored<UserStore>("user")
+const router = useRouter()
 
-// Реактивные данные
 const email = ref("")
 const password = ref("")
 const error = ref<string | null>(null)
 
-// Используем Store stores
-const userStore = useStored<UserStore>("user")
-
-// Computed свойства
 const loading = computed(() => userStore.loading)
 const name = computed(() => userStore.name)
 const isLogged = computed(() => userStore.isLogged)
@@ -35,6 +32,8 @@ const onLogin = async (): Promise<void> => {
 
     email.value = ""
     password.value = ""
+
+    router.push({ name: "User" })
   } catch (err) {
     error.value = err instanceof Error ? err.message : "Ошибка входа"
   }

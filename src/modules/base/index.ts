@@ -4,7 +4,7 @@ import { inirRoutes } from "./routes"
 /**
  * Модуль для работы с пользователем
  */
-export default new Module({
+export const baseModule = new Module({
   id: "user",
   inirRoutes
 })

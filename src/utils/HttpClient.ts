@@ -1,53 +1,35 @@
-/**
- * Конфигурация HTTP клиента
- */
-export interface HttpClientConfig {
-  /** Базовый URL для запросов */
-  baseUrl: string
-  /** Таймаут запросов в миллисекундах */
-  timeout?: number
-  /** Заголовки по умолчанию */
-  defaultHeaders?: Record<string, string>
-  /** Включить логирование */
-  enableLogging?: boolean
-}
+import type {
+  HttpClientConfig,
+  HttpClientResponse,
+  HttpClientRequestOptions,
+  IHttpClient,
+  HttpClientRequestParams,
+  HttpClientRequestBody
+} from "@types"
 
 /**
- * Опции HTTP запроса
+ * Ошибка HTTP клиента
  */
-export interface RequestOptions {
-  /** HTTP метод */
-  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH"
-  /** Заголовки запроса */
-  headers?: Record<string, string>
-  /** Таймаут запроса */
-  timeout?: number
-  /** Параметры запроса */
-  params?: Record<string, unknown>
-}
+export class HttpClientError extends Error {
+  /**
+   * Имя ошибки
+   */
+  public name: string = "HttpClientError"
 
-/**
- * Ответ HTTP запроса
- */
-export interface HttpResponse<T = unknown> {
-  /** Данные ответа */
-  data: T
-  /** HTTP статус код */
-  status: number
-  /** Заголовки ответа */
-  headers: Record<string, string>
-  /** URL запроса */
-  url: string
+  /**
+   * Инициализировать ошибку HTTP клиента
+   * @param message сообщение ошибки
+   */
+  constructor(message: string) {
+    super(message)
+  }
 }
-
-import ErrorParser from "./ErrorParser"
 
 /**
  * Утилита. HTTP клиент
  */
-export default class HttpClient {
+export class HttpClient implements IHttpClient {
   private config: Required<HttpClientConfig>
-  private errorParser: ErrorParser
 
   /**
    * Инициализировать клиента
@@ -55,206 +37,99 @@ export default class HttpClient {
    */
   constructor(config: HttpClientConfig) {
     this.config = {
-      timeout: 10000,
-      defaultHeaders: {
+      baseUrl: config.baseUrl,
+      headers: {
         "Content-Type": "application/json"
-      },
-      enableLogging: false,
-      ...config
+      }
     }
-    this.errorParser = new ErrorParser({
-      enableLogging: this.config.enableLogging
+  }
+
+  /**
+   * Построить URL с параметрами
+   * @param url URL
+   * @param params параметры
+   */
+  private buildUrl(path: string, params: HttpClientRequestParams): string {
+    const url = new URL(`${this.config.baseUrl}/${path}`)
+    const searchParams = new URLSearchParams()
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        searchParams.append(key, String(value))
+      }
     })
+
+    url.search = searchParams.toString()
+
+    return url.toString()
   }
 
   /**
    * Выполнить HTTP запрос
-   * @param url URL запроса
    * @param options опции запроса
-   * @returns промис с ответом
    */
-  private async request<T = unknown>(url: string, options: RequestOptions = {}): Promise<HttpResponse<T>> {
-    const { method = "GET", headers = {}, timeout = this.config.timeout, params } = options
-
-    const fullUrl = this.buildUrl(url, params)
-    const requestHeaders = { ...this.config.defaultHeaders, ...headers }
-
-    if (this.config.enableLogging) {
-      console.log(`[HttpClient] ${method} ${fullUrl}`, { headers: requestHeaders })
-    }
+  async request<T>(options: HttpClientRequestOptions): Promise<HttpClientResponse<T>> {
+    const method = options.method || "GET"
+    const url = this.buildUrl(options.url, options.params || {})
+    const headers = { ...this.config.headers, ...(options.headers || {}) }
+    const body = options.data ? JSON.stringify(options.data) : undefined
 
     try {
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), timeout)
-
-      const response = await fetch(fullUrl, {
-        method,
-        headers: requestHeaders,
-        signal: controller.signal
-      })
-
-      clearTimeout(timeoutId)
-
-      const data = await this.parseResponse<T>(response)
+      const response = await fetch(url, { method, headers, body })
 
       return {
-        data,
+        data: await response.json(),
         status: response.status,
-        headers: this.parseHeaders(response.headers),
-        url: fullUrl
+        headers: Object.fromEntries(response.headers.entries())
       }
     } catch (error) {
-      if (this.config.enableLogging) {
-        console.error(`[HttpClient] Ошибка запроса ${method} ${fullUrl}:`, error)
-      }
-      throw new Error(this.errorParser.parse(error))
+      const message = error instanceof Error ? error.message : String(error)
+
+      throw new HttpClientError(message)
     }
   }
 
   /**
-   * Построить полный URL с параметрами
-   * @param url базовый URL
-   * @param params параметры запроса
-   * @returns полный URL
+   * Выполнить GET запрос
+   * @param url URL
+   * @param params параметры
    */
-  private buildUrl(url: string, params?: Record<string, unknown>): string {
-    const fullUrl = url.startsWith("http") ? url : `${this.config.baseUrl}${url}`
-
-    if (!params) {
-      return fullUrl
-    }
-
-    const urlObj = new URL(fullUrl)
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        urlObj.searchParams.append(key, String(value))
-      }
-    })
-
-    return urlObj.toString()
+  async get<T>(url: string, params: HttpClientRequestParams): Promise<HttpClientResponse<T>> {
+    return this.request<T>({ url, method: "GET", params })
   }
 
   /**
-   * Парсить ответ сервера
-   * @param response ответ fetch
-   * @returns распарсенные данные
+   * Выполнить POST запрос
+   * @param url URL
+   * @param data данные
    */
-  private async parseResponse<T>(response: Response): Promise<T> {
-    const contentType = response.headers.get("content-type")
-
-    if (contentType?.includes("application/json")) {
-      return await response.json()
-    }
-
-    if (contentType?.includes("text/")) {
-      return (await response.text()) as T
-    }
-
-    return (await response.blob()) as T
+  async post<T>(url: string, data: HttpClientRequestBody): Promise<HttpClientResponse<T>> {
+    return this.request<T>({ url, method: "POST", data })
   }
 
   /**
-   * Парсить заголовки ответа
-   * @param headers заголовки Headers
-   * @returns объект с заголовками
+   * Выполнить PUT запрос
+   * @param url URL
+   * @param data данные
    */
-  private parseHeaders(headers: Headers): Record<string, string> {
-    const result: Record<string, string> = {}
-    headers.forEach((value, key) => {
-      result[key] = value
-    })
-    return result
+  async put<T>(url: string, data: HttpClientRequestBody): Promise<HttpClientResponse<T>> {
+    return this.request<T>({ url, method: "PUT", data })
   }
 
   /**
-   * Отправить GET запрос
-   * @param url URL запроса
-   * @param options опции запроса
-   * @returns промис с ответом
+   * Выполнить DELETE запрос
+   * @param url URL
    */
-  async get<T = unknown>(url: string, options: Omit<RequestOptions, "method"> = {}): Promise<HttpResponse<T>> {
-    return this.request<T>(url, { ...options, method: "GET" })
+  async delete<T>(url: string): Promise<HttpClientResponse<T>> {
+    return this.request<T>({ url, method: "DELETE" })
   }
 
   /**
-   * Отправить POST запрос
-   * @param url URL запроса
-   * @param data данные для отправки
-   * @param options опции запроса
-   * @returns промис с ответом
+   * Выполнить PATCH запрос
+   * @param url URL
+   * @param data данные
    */
-  async post<T = unknown>(
-    url: string,
-    data: unknown = {},
-    options: Omit<RequestOptions, "method"> = {}
-  ): Promise<HttpResponse<T>> {
-    // TODO: Реализовать отправку данных в теле запроса
-    console.log("POST data:", data)
-    return this.request<T>(url, {
-      ...options,
-      method: "POST",
-      headers: {
-        ...options.headers,
-        "Content-Type": "application/json"
-      }
-    })
-  }
-
-  /**
-   * Отправить PUT запрос
-   * @param url URL запроса
-   * @param data данные для отправки
-   * @param options опции запроса
-   * @returns промис с ответом
-   */
-  async put<T = unknown>(
-    url: string,
-    data: unknown = {},
-    options: Omit<RequestOptions, "method"> = {}
-  ): Promise<HttpResponse<T>> {
-    // TODO: Реализовать отправку данных в теле запроса
-    console.log("PUT data:", data)
-    return this.request<T>(url, {
-      ...options,
-      method: "PUT",
-      headers: {
-        ...options.headers,
-        "Content-Type": "application/json"
-      }
-    })
-  }
-
-  /**
-   * Отправить DELETE запрос
-   * @param url URL запроса
-   * @param options опции запроса
-   * @returns промис с ответом
-   */
-  async delete<T = unknown>(url: string, options: Omit<RequestOptions, "method"> = {}): Promise<HttpResponse<T>> {
-    return this.request<T>(url, { ...options, method: "DELETE" })
-  }
-
-  /**
-   * Отправить PATCH запрос
-   * @param url URL запроса
-   * @param data данные для отправки
-   * @param options опции запроса
-   * @returns промис с ответом
-   */
-  async patch<T = unknown>(
-    url: string,
-    data: unknown = {},
-    options: Omit<RequestOptions, "method"> = {}
-  ): Promise<HttpResponse<T>> {
-    // TODO: Реализовать отправку данных в теле запроса
-    console.log("PATCH data:", data)
-    return this.request<T>(url, {
-      ...options,
-      method: "PATCH",
-      headers: {
-        ...options.headers,
-        "Content-Type": "application/json"
-      }
-    })
+  async patch<T>(url: string, data: HttpClientRequestBody): Promise<HttpClientResponse<T>> {
+    return this.request<T>({ url, method: "PATCH", data })
   }
 }

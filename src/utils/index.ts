@@ -1,32 +1,21 @@
-import AccessManager from "./AccessManager"
-import HttpClient from "./HttpClient"
-import ErrorParser from "./ErrorParser"
-import LocalStorage from "./LocalStorage"
-import type { AccessManagerConfig, HttpClientConfig, ErrorParserConfig } from "./types"
+import type { UtilsConfig } from "@types"
+
+import { AccessManager } from "./AccessManager"
+import { HttpClient } from "./HttpClient"
+import { LocalStorage } from "./LocalStorage"
 
 /**
- * Конфигурация утилит
+ * Инициализировать утилиты
+ * @param config конфигурация утилит
  */
-export interface UtilsConfig {
-  accessManager: AccessManagerConfig
-  httpClient: HttpClientConfig
-  errorParser?: ErrorParserConfig
-}
+export const initUtils = (config: UtilsConfig) => {
+  const localStorage = new LocalStorage(config.localStorage)
+  const accessManager = new AccessManager(localStorage, config.accessManager)
+  const httpClient = new HttpClient(config.httpClient)
 
-/**
- * Зависимости приложения
- */
-export default ({ config }: { config: UtilsConfig }) => {
   return {
-    "@utils/AccessManager": () => new AccessManager(config.accessManager),
-    "@utils/HttpClient": () => new HttpClient(config.httpClient),
-    "@utils/ErrorParser": () => new ErrorParser(config.errorParser),
-    "@utils/Storage": () => new LocalStorage()
+    localStorage,
+    accessManager,
+    httpClient
   }
 }
-
-// Экспорт типов для использования в других модулях
-export type { AccessManagerConfig, HttpClientConfig, ErrorParserConfig } from "./types"
-export type { AuthData } from "./AccessManager"
-export type { HttpResponse, RequestOptions } from "./HttpClient"
-export type { ErrorParserConfig as ErrorParserConfigType } from "./ErrorParser"

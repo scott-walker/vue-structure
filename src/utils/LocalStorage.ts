@@ -1,14 +1,28 @@
+import type { ILocalStorage, LocalStorageConfig } from "@types"
+
 /**
- * Хранилище
+ * Утилита. Локальное хранилище
  */
-export default class LocalStorage {
+export class LocalStorage implements ILocalStorage {
+  private config: Required<LocalStorageConfig>
+
+  /**
+   * Инициализировать хранилище
+   * @param config конфигурация хранилища
+   */
+  constructor(config: LocalStorageConfig) {
+    this.config = {
+      storageKey: config.storageKey || "app"
+    }
+  }
+
   /**
    * Установить данные в хранилище
    * @param key ключ для хранения
    * @param value значение для сохранения
    */
   set(key: string, value: unknown): void {
-    localStorage.setItem(key, JSON.stringify(value))
+    localStorage.setItem(this.makeKey(key), JSON.stringify(value))
   }
 
   /**
@@ -19,13 +33,16 @@ export default class LocalStorage {
    */
   get<T = unknown>(key: string, defaultValue: T | null = null): T | null {
     try {
-      const item = localStorage.getItem(key)
+      const item = localStorage.getItem(this.makeKey(key))
+
       if (item === null) {
         return defaultValue
       }
-      return JSON.parse(item) as T
+
+      return JSON.parse(item)
     } catch (error) {
-      console.warn(`Ошибка при чтении из localStorage для ключа "${key}":`, error)
+      console.warn(`[LocalStorage] Key "${key}" not found:`, error)
+
       return defaultValue
     }
   }
@@ -35,7 +52,7 @@ export default class LocalStorage {
    * @param key ключ для удаления
    */
   remove(key: string): void {
-    localStorage.removeItem(key)
+    localStorage.removeItem(this.makeKey(key))
   }
 
   /**
@@ -51,21 +68,14 @@ export default class LocalStorage {
    * @returns true если ключ существует
    */
   has(key: string): boolean {
-    return localStorage.getItem(key) !== null
+    return localStorage.getItem(this.makeKey(key)) !== null
   }
 
   /**
-   * Получить все ключи из хранилища
-   * @returns массив всех ключей
+   * Сформировать ключ
+   * @param key ключ для формирования
    */
-  keys(): string[] {
-    const keys: string[] = []
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i)
-      if (key !== null) {
-        keys.push(key)
-      }
-    }
-    return keys
+  private makeKey(key: string): string {
+    return `${this.config.storageKey}.${key}`
   }
 }

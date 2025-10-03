@@ -5,17 +5,15 @@
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "paths": {
-      "@/*": ["./src/*"],
-      "@base/*": ["./src/base/*"],
-      "@components/*": ["./src/components/*"],
-      "@composables/*": ["./src/composables/*"],
+      "@types": ["./src/types/index.ts"],
+      "@core": ["./src/core/index.ts"],
+      "@config": ["./src/config/index.ts"],
+      "@utils": ["./src/utils/index.ts"],
+      "@modules": ["./src/modules/index.ts"],
+
+      // "@plugins": ["./src/plugins"],
       "@modules/*": ["./src/modules/*"],
-      "@assets/*": ["./src/assets/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@plugins/*": ["./src/plugins/*"],
-      "@config": ["./src/config"],
-      "@utils": ["./src/utils"],
-      "@types": ["./src/types"]
+      "@assets/*": ["./src/assets/*"]
     }
   }
 }

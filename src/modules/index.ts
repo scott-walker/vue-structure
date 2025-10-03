@@ -1,7 +1,7 @@
-import base from "./base"
-import user from "./user"
+import { baseModule } from "./base"
+import { userModule } from "./user"
 
 /**
  * Модули приложения
  */
-export const modules = [base, user]
+export const modules = [baseModule, userModule]

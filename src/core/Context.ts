@@ -90,13 +90,13 @@ export class Context implements IContext {
    * @param id ID модуля
    */
   public useStored<T = StoredApi>(id: ModuleId): T {
-    const store = this.stored.get(id)
+    const useStore = this.stored.get(id)
 
-    if (!store) {
+    if (!useStore) {
       throw new ContextError(`Stored API for module ${id} not found`)
     }
 
-    return store as T
+    return useStore() as T
   }
 
   /**

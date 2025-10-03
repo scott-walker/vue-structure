@@ -1,6 +1,6 @@
 import { createApp } from "vue"
 import { createRouter, createWebHistory } from "vue-router"
-import { createPinia } from "pinia"
+import { createPinia, defineStore } from "pinia"
 
 import type {
   VueInstance,
@@ -81,7 +81,9 @@ export class Application implements IApplication {
 
     // Добавить модуль хранилища состояний
     if (module.initStored !== undefined) {
-      this.context.setStored(module.id, module.initStored(this.shareContext()))
+      const useStore = defineStore(module.id, () => module.initStored?.(this.shareContext()))
+
+      this.context.setStored(module.id, useStore)
     }
 
     // Добавить API модуля предоставляемый другим модулям

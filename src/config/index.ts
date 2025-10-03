@@ -12,9 +12,6 @@ export type AppConfig = {
     localStorage: {
       storageKey: string
     }
-    accessManager: {
-      authKey: string
-    }
     httpClient: {
       baseUrl: string
     }
@@ -32,9 +29,6 @@ export const config: Config<AppConfig> = {
   utils: {
     localStorage: {
       storageKey: "app"
-    },
-    accessManager: {
-      authKey: "auth"
     },
     httpClient: {
       baseUrl: "http://localhost:8081"

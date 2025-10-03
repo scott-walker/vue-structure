@@ -1,4 +1,12 @@
-import type { IModule, RouterRoute, SharedApi, ModuleProps, SharedContext, StoredApi } from "@types"
+import type {
+  IModule,
+  ModuleProps,
+  ModuleInitRoutes,
+  ModuleInitStored,
+  ModuleInitShared,
+  SharedApi,
+  StoredApi
+} from "@types"
 import { ModuleError } from "./ModuleError"
 
 /**
@@ -8,16 +16,16 @@ import { ModuleError } from "./ModuleError"
  * @param initStored Инициализатор хранилища состояний модуля
  * @param initShared Инициализатор API модуля (общедоступный API)
  */
-export class Module implements IModule {
+export class Module<ST = StoredApi, SH = SharedApi> implements IModule<ST, SH> {
   public id: string
-  public inirRoutes?: (context: SharedContext) => RouterRoute[]
-  public initStored?: (context: SharedContext) => StoredApi
-  public initShared?: (context: SharedContext) => SharedApi
+  public inirRoutes?: ModuleInitRoutes
+  public initStored?: ModuleInitStored<ST>
+  public initShared?: ModuleInitShared<SH>
 
   /**
    * Инициализировать модуль
    */
-  constructor({ id, inirRoutes, initStored, initShared }: ModuleProps) {
+  constructor({ id, inirRoutes, initStored, initShared }: ModuleProps<ST, SH>) {
     if (!id) {
       throw new ModuleError("Module ID is required")
     }

@@ -74,9 +74,9 @@ export class Application implements IApplication {
    * @param module Модуль
    */
   private registerModule(module: IModule): void {
-    // Добавить маршруты модуля
-    if (module.inirRoutes !== undefined) {
-      module.inirRoutes(this.shareContext()).forEach(route => this.router.addRoute(route))
+    // Добавить API модуля предоставляемый другим модулям
+    if (module.initShared !== undefined) {
+      this.context.setShared(module.id, module.initShared(this.shareContext()))
     }
 
     // Добавить модуль хранилища состояний
@@ -86,9 +86,9 @@ export class Application implements IApplication {
       this.context.setStored(module.id, useStore)
     }
 
-    // Добавить API модуля предоставляемый другим модулям
-    if (module.initShared !== undefined) {
-      this.context.setShared(module.id, module.initShared(this.shareContext()))
+    // Добавить маршруты модуля
+    if (module.inirRoutes !== undefined) {
+      module.inirRoutes(this.shareContext()).forEach(route => this.router.addRoute(route))
     }
   }
 

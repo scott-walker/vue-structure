@@ -1,8 +1,15 @@
 # Vue Structure (Модульная архитектура)
 
-Проект реализует модульную архитектуру на базе Vue 3, Vue Router, Pinia
+> ⚠️ **ВНИМАНИЕ!** Приложение пакет находится в стадии рефакторинга. Некоторые функции могут работать нестабильно.
 
-### Core Technologies
+[![Refactoring](https://img.shields.io/badge/Status-Refactoring-orange?style=for-the-badge&logo=construction&logoColor=white)](https://github.com/your-repo)
+[![Warning](https://img.shields.io/badge/Warning-Under%20Development-yellow?style=for-the-badge&logo=warning&logoColor=black)](https://github.com/your-repo)
+
+<br />
+
+### О проекте
+
+Проект реализует модульную архитектуру на базе Vue 3, Vue Router, Pinia
 
 ![Vue.js](https://img.shields.io/badge/Vue.js-3.5.22-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=for-the-badge&logo=typescript&logoColor=white)

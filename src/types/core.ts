@@ -25,7 +25,7 @@ export type Store = ReturnType<typeof createPinia>
 /**
  * Модуль хранилища состояний
  */
-export type StoredApi<T = unknown> = T
+export type StoredApi<T = unknown> = () => T
 
 /**
  * Карта модулей хранилища состояний

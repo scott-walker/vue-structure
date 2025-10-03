@@ -1,69 +1,22 @@
+import { computed, ref } from "vue"
 import { defineStore } from "pinia"
-import { type StoreModule } from "@types"
 
-// Создаем store с помощью defineStore
-export const useCounterStore = defineStore("counter", {
-  state: () => ({
-    count: 0,
-    message: "Counter Module"
-  }),
-  getters: {
-    getCount: state => state.count,
-    getMessage: state => state.message,
-    getDoubleCount: state => state.count * 2,
-    getIsEven: state => state.count % 2 === 0
-  },
-  actions: {
-    increment() {
-      this.count++
-    },
-    decrement() {
-      this.count--
-    },
-    reset() {
-      this.count = 0
-    },
-    setCount(value: number) {
-      this.count = value
-    },
-    setMessage(message: string) {
-      this.message = message
-    }
-  }
-})
+// export const store = defineStore("counter", () => {
+//   const count = ref(0)
+//   const doubleCount = computed(() => count.value * 2)
+//   function increment() {
+//     count.value++
+//   }
 
-// Экспортируем для модульной системы
-export default (): StoreModule => {
-  return {
-    Counter: {
-      id: "counter",
-      state: () => ({
-        count: 0,
-        message: "Counter Module"
-      }),
-      getters: {
-        getCount: state => state.count,
-        getMessage: state => state.message,
-        getDoubleCount: state => state.count * 2,
-        getIsEven: state => state.count % 2 === 0
-      },
-      actions: {
-        increment() {
-          this.count++
-        },
-        decrement() {
-          this.count--
-        },
-        reset() {
-          this.count = 0
-        },
-        setCount(value: number) {
-          this.count = value
-        },
-        setMessage(message: string) {
-          this.message = message
-        }
-      }
-    }
+//   return { count, doubleCount, increment }
+// })
+
+export const store = ({ textService }: { textService: TextService }) => {
+  const count = ref(0)
+  const doubleCount = computed(() => count.value * 2)
+  function increment() {
+    count.value++
   }
+
+  return { count, doubleCount, increment }
 }

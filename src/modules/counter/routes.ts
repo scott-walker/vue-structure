@@ -1,5 +1,5 @@
 import { type RouteRecordRaw } from "vue-router"
-import CounterView from "./views/CounterView.vue"
+import CounterView from "./views/Counter.vue"
 
 export default ({ invoke }: { invoke: (address: string) => unknown }): RouteRecordRaw[] => {
   const accessManager = invoke("@utils/AccessManager") as { isLogged: () => boolean }

@@ -1,17 +1,19 @@
-import { type Config as BaseConfig } from "@types"
+import type { Config } from "@types"
 
 /**
  * Интерфейс конфигурации приложения
  */
-export type Config = BaseConfig & {
+export type AppConfig = {
   main: {
     debug: boolean
     baseUrl: string
   }
   utils: {
+    localStorage: {
+      storageKey: string
+    }
     accessManager: {
-      roles: string[]
-      permissions: string[]
+      authKey: string
     }
     httpClient: {
       baseUrl: string
@@ -19,15 +21,20 @@ export type Config = BaseConfig & {
   }
 }
 
-export const config: Config = {
+/**
+ * Конфигурация приложения
+ */
+export const config: Config<AppConfig> = {
   main: {
     debug: true,
     baseUrl: "/"
   },
   utils: {
+    localStorage: {
+      storageKey: "app"
+    },
     accessManager: {
-      roles: [],
-      permissions: []
+      authKey: "auth"
     },
     httpClient: {
       baseUrl: "http://localhost:8081"
